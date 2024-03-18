@@ -11,11 +11,12 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "bookMS"
+    database: "bookMS",
+    dateStrings: 'date'
 })
 
 app.get('/', (req, res)=>{
-    const sql = "SELECT * FROM book";
+    const sql = "SELECT * FROM example_table";
     db.query(sql, (err, data)=>{
         if(err){
             return res.json({Error: "Error"})
@@ -27,7 +28,7 @@ app.get('/', (req, res)=>{
 })
 
 app.post('/create', (req, res)=>{
-    const sql = "INSERT INTO book (publisher, name, date) VALUES(?)";
+    const sql = "INSERT INTO example_table (publisher, name, date) VALUES(?)";
     const values = [
         req.body.publisher,
         req.body.name,
@@ -36,7 +37,7 @@ app.post('/create', (req, res)=>{
 
     db.query(sql, [values], (err, data)=>{
         if(err){
-            return res.json({Error: "Error"})
+            return res.json(err)
         }
         else{
             return res.json(data);
@@ -45,7 +46,7 @@ app.post('/create', (req, res)=>{
 })
 
 app.put('/update/:id', (req, res)=>{
-    const sql = "UPDATE book SET publisher = ?, name = ?, date = ? where id = ?";
+    const sql = "UPDATE example_table SET publisher = ?, name = ?, date = ? where id = ?";
     
     const values = [
         req.body.publisher,
@@ -65,7 +66,7 @@ app.put('/update/:id', (req, res)=>{
 })
 
 app.delete('/delete/:id', (req, res)=>{
-    const sql = "DELETE FROM book WHERE id = ?";
+    const sql = "DELETE FROM example_table WHERE id = ?";
     const values = [
         req.body.publisher,
         req.body.name,
@@ -82,6 +83,19 @@ app.delete('/delete/:id', (req, res)=>{
     })
 })
 
-app.listen(3000, ()=>{
+app.get('/getrecord/:id', (req, res)=>{
+    const id = req.params.id;
+    const sql = "SELECT * FROM example_table WHERE id = ?";
+    db.query(sql, [id], (err, data)=>{
+        if(err){
+            return res.json({Error: "Error"})
+        }
+        else{
+            return res.json(data);
+        }
+    })
+})
+
+app.listen(8000, ()=>{
     console.log("server is running");
 })
